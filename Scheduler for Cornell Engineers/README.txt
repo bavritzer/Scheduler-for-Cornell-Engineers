@@ -1,0 +1,1 @@
+This file contains information about the scheduling application. Apache Pdfbox v2.0.6 was used in its creation, but the JAR file in this folder will work without it as long as you have an up-to-date version of Java intsalled on the computer. 
