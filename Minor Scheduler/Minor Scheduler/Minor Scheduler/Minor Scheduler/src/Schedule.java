@@ -21,7 +21,7 @@ public class Schedule {
 	public int numSems=8;
 	public int[] classesPerSem;
 	public Calendar schedule;
-	public static String[] variety = new String[]{"CS 2850", "ECON 1110", "PSYCH 1101", "BIOEE 1540", "HADM 4300","ENGRC 3500"};
+	public static String[] variety = new String[]{"CS 2850", "ECON 1110", "DSOC 1101", "BIOEE 1540", "HADM 4300","ENGRC 3500"};//chosen for flexibility, general interest and satisfying requirements
 
 	public Schedule(String tm, String ti, String tlib, int sems){
 		maj = tm;
@@ -78,7 +78,7 @@ public class Schedule {
 		if(s.contains("Liberal Arts")){
 			return c.isLibArts;
 		}
-		if(s.contains("Elective")){
+		if(s.toLowerCase().contains("elective")|| s.toLowerCase().contains("course")){
 			if(Integer.toString(c.courseNum).endsWith("999")||Integer.toString(c.courseNum).endsWith("090")||Integer.toString(c.courseNum).endsWith("998")){
 				return false; //these electives are research
 			}
@@ -87,30 +87,27 @@ public class Schedule {
 			}
 			else if(s.toLowerCase().contains((major.abbreviate(major.thisMajor)).toLowerCase())){
 				if(s.matches("(.*\\d\\d\\d\\d.*)")){
-					Pattern pattern = Pattern.compile("(\\d\\d\\d\\d.)");
+					Pattern pattern = Pattern.compile("(\\d\\d\\d\\d)");
 					Matcher matcher = pattern.matcher(s);
 					String f = "";
 					while(matcher.find()){
 						f = matcher.group();
 						//System.out.println(f);
 					}
-					if(f.endsWith("+")){
-						return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor))&&c.courseNum>=Integer.parseInt(f.substring(0, f.length()-1));
-					}
-					if(f.endsWith("s")||f.endsWith("-")){
-						return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor))&&(c.courseNum>=Integer.parseInt(f.substring(0, f.length()-1))&&(c.courseNum<=1000+Integer.parseInt(f.substring(0, f.length()-1))));
+					if(s.contains("+")){
+						return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor))&&c.courseNum>=Integer.parseInt(f.substring(0, f.length()));
 					}
 					else{
-						return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor))&&(c.courseNum>=Integer.parseInt(f.substring(0, f.length()-1))&&(c.courseNum<=1000+Integer.parseInt(f.substring(0, f.length()-1))));
+						return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor))&&(c.courseNum>=Integer.parseInt(f.substring(0, f.length()))&&(c.courseNum<=1000+Integer.parseInt(f.substring(0, f.length()))));
 					}
 					
 				}
 				else return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor));
 			}
-			else if(s.toLowerCase().equals("major-approved elective")){
+			else if(s.toLowerCase().contains("major-approved elective")){
 				return c.isTE;
 			}
-			else if(s.toLowerCase().equals("technical elective")){
+			else if(s.toLowerCase().contains("technical elective")){
 				return c.isTE;
 			}
 			else{
@@ -230,11 +227,13 @@ public class Schedule {
 		ArrayList<String> al = new ArrayList<String>();
 		for(Object q : softs){
 			if(q!=null){
-//			System.out.println(q);
+			System.out.println(q);
 			if(!al.contains(q.toString()) ){//|| !q.toString().matches("([A-Z]{2,}\\s\\d\\d\\d\\d[a-z].*)")){
 			String n = Interpret(q.toString());
+//			System.out.println(n);
 			String k = getData1(n);
 			ArrayList<String> z = extractClasses(k);//gets all the classes that satisfy req
+//			System.out.println("##");
 			ArrayList<sched> s = Courseify(z);
 			boolean t = false;
 			for(sched r: s){
@@ -363,6 +362,8 @@ public class Schedule {
 			}
 		}
 		Collections.reverse(v);//want to check later requirements first
+		int times = 0;
+		while(times<6){
 		for(sched q : v){
 			int pp = 0;
 			boolean qlp = true;
@@ -381,50 +382,11 @@ public class Schedule {
 								g = false;}
 						}
 					}
-//					if(q.name.equals("AEP 3550")){
-////					System.out.println("q: "+q.name+" k: "+k.name+" sems are: "+q.sem+"#"+k.sem+" priority: "+k.priority+" g: "+g+" pp: "+pp+" require: "+k.semOff.contains(q.sem%4)+q.semOff.contains(k.sem%4)+" qlp: "+qlp);
-//					}
-					if(
-							!(k.isPrereqfor)&&
-							k.sem>q.pSem(v)&&q.sem>k.pSem(v)&&q.sem<k.sSem(v)&&k.sem<q.sSem(v)&&//if k is a prereq don't put it after the required class
-							q.semOff.contains(k.sem%4)&&qlp&&k.priority<=pp&&g&&k.semOff.contains(q.sem%4)){//if the switch is viable
-						sched l = k;
-						int h = v.indexOf(q);
-						int t = v.indexOf(k);
-						int st = q.sem;
-						q.setSem(l.sem);
-						l.setSem(st);//swaps the two classes in the schedule
-						v.set(t, q);
-						v.set(h, l);
-						qlp = false;
-					}
-				}
-				pp++;
-			}
-		}
-		for(sched q : v){
-			int pp = 0;
-			boolean qlp = true;
-			while(!(q.semOff.contains(q.sem%4)&&q.pSem(v)<q.sem)&&q.sem>=1&& qlp&&pp<100){//want each thing to be possible and after its prereqs
-				for(sched k : v){
-					boolean g = true;//would this violate a prereq ordering
-					for(sched r : q.Prereq){
-						for(sched e : v){
-							if((e.name.contains(r.name)||r.name.contains(e.name))&&e.sem>k.sem){
-							g = false;}
-						}
-					}
-					for(sched u : k.Prereq){
-						for(sched e: v){
-							if((e.name.contains(u.name)||u.name.contains(e.name))&&e.sem>q.sem){
-								g = false;}
-						}
-					}
-//					if(q.name.equals("AEP 3550")){
+//					if(q.name.equals("AEP 4210")){
 //					System.out.println("q: "+q.name+" k: "+k.name+" sems are: "+q.sem+"#"+k.sem+" priority: "+k.priority+" g: "+g+" pp: "+pp+" require: "+k.semOff.contains(q.sem%4)+q.semOff.contains(k.sem%4)+" qlp: "+qlp);
 //					}
 					if(
-							!(k.isPrereqfor)&&
+//							!(k.isPrereqfor)&&
 							k.sem>q.pSem(v)&&q.sem>k.pSem(v)&&q.sem<k.sSem(v)&&k.sem<q.sSem(v)&&//if k is a prereq don't put it after the required class
 							q.semOff.contains(k.sem%4)&&qlp&&k.priority<=pp&&g&&k.semOff.contains(q.sem%4)){//if the switch is viable
 						sched l = k;
@@ -441,6 +403,7 @@ public class Schedule {
 				pp++;
 			}
 		}
+	times++;}
 		Collections.reverse(v);
 		return v;
 	}
@@ -536,9 +499,14 @@ public class Schedule {
 				if(i.contains(g)){
 					qy = true;
 				}
+				boolean qx = false;
+				while(!qx){
 				int y = (int)(Math.random()*ENGRI.size());
 //				System.out.println("ye: "+y);
 				i = ENGRI.get(y);
+				sched qq = new sched(i);
+				qx = qq.semOff.size()>2;//want a flexible ENGRI
+				}
 //				System.out.println("ie&&"+i);
 				if(qy){
 					i+=g;
@@ -593,8 +561,12 @@ public class Schedule {
 				}
 			}
 			else if(i.contains("Major-Approved")||i.toLowerCase().contains("technical elective")||i.contains("Advisor-Approved")
-					||(i.toLowerCase().contains("elective") && i.contains(major.abbreviate(major.thisMajor)))
+					||((i.toLowerCase().contains("elective")||i.contains("course")) && i.contains(major.abbreviate(major.thisMajor)))
 					){
+//				System.out.println(i+"@$#");
+//				for(String tqr : maj){
+//					System.out.println(tqr+"!!!#@");
+//				}
 				int y = 0;
 				sched b = new sched(maj.get(y));
 				boolean hh = true;
@@ -618,7 +590,7 @@ public class Schedule {
 					while(!maj.get(y).contains(major.abbreviate(major.thisMajor))&&y<maj.size()-1){
 					y++;}
 //					System.out.println(maj.get(y)+"#####");
-//					System.out.println(major.reqs.contains(b.name)+"$$"+checkPreq(b, major.reqs)+"&&"+b.isTE+"**"+b.getCredits()+"^^"+(y<maj.size()-1));
+//					System.out.println(major.reqs.contains(b.name)+"$$"+checkPreq(b, major.reqs)+"&&"+b.isTE+"**"+b.getCredits()+"^^"+(y<maj.size()-1)+"#%^&"+satisfiesReq(i, b, major.reqs));
 					b = new sched(maj.get(y));
 //					System.out.println(maj.get(y)+"@&&&");
 				}

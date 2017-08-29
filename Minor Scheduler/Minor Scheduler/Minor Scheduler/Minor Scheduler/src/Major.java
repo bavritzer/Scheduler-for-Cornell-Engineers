@@ -140,7 +140,7 @@ public class Major {
 	public ArrayList<String> getRequirement(Major m) throws IOException{
 		ArrayList<String> requirements = new ArrayList<String>();
 			int year = Calendar.getInstance().get(Calendar.YEAR);
-			if(Calendar.getInstance().get(Calendar.MONTH)<9) year--;//new version comes out in Sep
+			if(Calendar.getInstance().get(Calendar.MONTH)<8) year--;//new version comes out in Sep
 //			URL website = new URL("https://www.engineering.cornell.edu/academics/undergraduate/curriculum/handbook/upload/"+year+"-Eng-Handbook-PDF.pdf");
 			File f = new File(System.getProperty("user.home")+File.separator+"Engineering_Handbook.pdf");
 //			if(f.exists()){f.delete();}//update to current version
@@ -190,11 +190,13 @@ public class Major {
 		public String getClass(String s){
 			String c = "";
 			if(s.matches("(.*\\d[a-z].*)")){
+//				System.out.println(s+"a#");
 				int q = s.replaceAll("(\\d[a-z])", "###").indexOf("###")+1;
 				c = Character.toString(s.charAt(q));
 //				System.out.println(s+"###"+c);
 			}
 			if(s.toLowerCase().matches("(.*(elective)\\s{0,}[a-z]\\s.*)")){
+//				System.out.println(s+"b#");
 				int q = s.toLowerCase().indexOf("elective")+"elective".length();
 				while(s.charAt(q) == ' '){
 					q++;
@@ -212,11 +214,30 @@ public class Major {
 				return "Technical Elective"+(c!=""?" ("+c+")":"");
 			}
 			if(s.toLowerCase().contains("elective ") 
-					&& (('a'<=(s.charAt(s.toLowerCase().indexOf("elective")+1))&& (s.charAt(s.toLowerCase().indexOf("elective")+1))<='n') || s.charAt(s.toLowerCase().indexOf("elective")+1) == ' ')){
+					&& (('a'<=(s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()) == ' ')){
 				int uo = s.toLowerCase().lastIndexOf("elective ");
 				int p = s.indexOf("\n");
 				int q = s.indexOf("\n", p+1);
 				String x = s.substring(q>-1?q:0,'a'<=(s.charAt(uo+9))&&(s.charAt(uo+9))<='z'?uo+8:uo+9).trim();
+				return  x+(c!=""?" ("+c+")":"");
+			}
+			if(s.toLowerCase().contains("elective")
+					&& (('a'<=(s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()) == ' ')){
+				int uo = s.toLowerCase().lastIndexOf("elective");
+//				System.out.println(s+"@@@");
+				int p = s.indexOf("\n");
+				int q = s.indexOf("\n", p+1);
+				String x = s.substring(q>-1?q:0,'a'<=(s.charAt(uo+9))&&(s.charAt(uo+9))<='z'?uo+8:uo+9).trim();
+				return  x+(c!=""?" ("+c+")":"");
+			}
+			if(s.toLowerCase().contains("course") 
+					&& ((s.length()<s.indexOf("course")+"course".length())||('a'<=(s.charAt(s.toLowerCase().indexOf("course")+"course".length()))&& (s.charAt(s.toLowerCase().indexOf("course")+"course".length()))<='n') || s.charAt(s.toLowerCase().indexOf("course")+"course".length()) == ' ')){
+//				System.out.println(s+"#");
+				int uo = s.toLowerCase().lastIndexOf("course");
+//				System.out.println(uo+"#$");
+				int p = s.indexOf("\n");
+				int q = s.indexOf("\n", p+1);
+				String x = s.substring(q>-1?q:0,'a'<=(s.charAt(uo+"course ".length()))&&(s.charAt(uo+"course ".length()))<='z'?uo+"course ".length()-1:uo+"course ".length()).trim();
 				return  x+(c!=""?" ("+c+")":"");
 			}
 			if(s.toLowerCase().contains("requirement")){
@@ -241,7 +262,7 @@ public class Major {
 				//System.out.println(f);
 			}
 			if(!f.toLowerCase().equals(f)){
-			//System.out.println(f);
+			System.out.println(f+"#f");
 				String q = f.trim();
 				return q;}
 			else return "";}	

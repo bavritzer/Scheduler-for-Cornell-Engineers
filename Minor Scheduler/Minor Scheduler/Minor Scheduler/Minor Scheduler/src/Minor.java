@@ -85,10 +85,10 @@ public int[] getRequirement(Minor m){
 		m.requirements[3] = "MATH 3110 or MATH 3210 or MATH 3230 or MATH 4130 or MATH 4140 or MATH 4180 or MATH 4200 or MATH 4210 or MATH 4220 or MATH 4240 or MATH 4250 or MATH 4260 or MATH 4280";
 		m.requirements[4] = "MATH 3000s or 4000s course";
 		m.requirements[5] = "MATH 4000s course";
-		m.requirements[4]+=" a";
+//		m.requirements[4]+=" a";
 		m.replacements[2] = "Advanced Algebra";
 		m.replacements[3] = "Mathematical Analysis";
-		y= new int[]{2, 1, 3};}
+		y= new int[]{2, 2, 2};}
 	else if(m.thisMinor.equals("Dyson Business Minor for Engineers")){
 		m.requirements = new String[6];
 		m.replacements = new String[6];

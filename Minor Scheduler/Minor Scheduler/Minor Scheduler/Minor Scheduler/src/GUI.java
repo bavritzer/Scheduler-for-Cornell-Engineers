@@ -100,7 +100,7 @@ MouseListener, MouseMotionListener{
 		win.setPreferredSize(new Dimension((int)(300/1440.0*w), (int)(300*h/900.0)));
 		win.setLocation(new Point((int)(w/2.0), (int)(h/2.0)));
 		win.setVisible(false);
-		popup.setMessage("This app will not work for\nCS majors due to typos in the \nengineering handbook. It also\nwill not schedule any unclear requirements\nsuch as 'Design Elective' which are \nundefined in the handbook. \nOtherwise, it should make a viable schedule\nand store it where you specify. \nProceed?");
+		popup.setMessage("This app may not work well for\ncertain majors like ECE due to an abundance of restricted electives not well-defined in \nthe engineering handbook. It\nwill not schedule any unclear requirements\nsuch as 'Design Elective' which are \nundefined in the handbook - you should be able to\ntell which these are from the displayed notes. \nOtherwise, it should make a viable schedule\nand store it where you specify. \nProceed?");
 		win.add(popup);
 		finalize = new JButton("Get Requirements");
 		select1  = new JButton("Select Major");

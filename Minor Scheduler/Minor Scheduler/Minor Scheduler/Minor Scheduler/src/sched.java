@@ -58,6 +58,7 @@ public class sched {
 	}
 
 	public sched(String t){
+//		System.out.println(name);
 		name = t;
 		if(this.name.contains("BIOSM")){//BIOSM is only available in summer
 			name = name.replace("BIOSM",  "BIOG");
@@ -572,8 +573,12 @@ public class sched {
 		}
 		else if(name.equals("AEP 3550")){//also changed last year
 			semOff.add(2);
-			semOff.add(4);
+			semOff.add(0);
 		}
+//		else if(name.equals("AEP 3610")){//also changed last year
+//			semOff.add(1);
+//			semOff.add(3);
+//		}
 		else{
 		for(String i: dates){
 		try{InputStreamReader isr= new InputStreamReader(
