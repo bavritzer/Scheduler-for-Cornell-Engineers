@@ -27,15 +27,17 @@ public class Major {
 		}
 		thisMajor = s;
 		reqs = getRequirement(this);
-		this.removeMins();
+		this.reqs = this.removeMins(reqs);
 	}
 	//removes anything with minimum in it
-	public void removeMins(){
-		for(String i : reqs){
+	public ArrayList<String> removeMins(ArrayList<String> v){
+		ArrayList<String> q = new ArrayList<String>();
+		for(String i : v){
 			if(i.contains("minimum")){
-				reqs.remove(i);
 			}
+			else q.add(i);
 		}
+		return q;
 	}
 	//checks if a String[] contains a given string
 	public boolean contains(String[] t, String s){
