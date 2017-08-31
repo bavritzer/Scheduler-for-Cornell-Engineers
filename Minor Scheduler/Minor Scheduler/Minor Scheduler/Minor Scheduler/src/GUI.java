@@ -189,6 +189,8 @@ MouseListener, MouseMotionListener{
 			       "Usage Notes", popup.INFORMATION_MESSAGE);
 		if(result == JOptionPane.OK_OPTION){
 			this.setVisible(true);
+			popup.setVisible(false);
+			win.setVisible(false);
 		}
 		else{System.exit(0);}
 		win.pack();

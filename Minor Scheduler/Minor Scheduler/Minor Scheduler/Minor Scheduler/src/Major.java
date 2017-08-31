@@ -166,7 +166,7 @@ public class Major {
 //			System.out.println("x: "+x+"and the substring is "+s.substring(k-1, k));
 			String notePage = s.substring(l, x);
 			String[] c = classPage.split("❑");
-			String[] n = notePage.split("(\n[a-z]\\.)");
+			String[] n = notePage.split("(\n[a-z][\\.[\\s\\s]])");//some people forget periods smh
 			String[] classes = new String[c.length-2];
 			String[] notes = new String[n.length-1];
 			for(int y = 1; y<n.length; y++){
@@ -206,6 +206,10 @@ public class Major {
 				c = Character.toString(s.charAt(q));
 //				System.out.println(s+"###"+c);
 			}
+			if((s.toLowerCase().contains("engrd")||s.toLowerCase().contains("engineering distribution"))&&s.replaceAll("(.*([A-Z]{2,}\\s\\d\\d\\d\\d).*)", "####").equals(s)&&!(s.toLowerCase().contains("recommended"))){
+				System.out.println(s+"$$"+s.replaceAll("(.*([A-Z]{2,}\\s\\d\\d\\d\\d).*)", "####"));
+				return "ENGRD 2110"+(c!=""?" ("+c+")":"");//2110 should be taken by everyone if possible
+			}
 			if(s.toLowerCase().contains("advisor-approved elective")){
 				return "Advisor-Approved Elective"+(c!=""?" ("+c+")":"");
 			}
@@ -214,6 +218,9 @@ public class Major {
 			}
 			if(s.toLowerCase().contains("technical elective")){
 				return "Technical Elective"+(c!=""?" ("+c+")":"");
+			}
+			if(!s.contains(" ") || s.charAt(s.indexOf(" ")+1)==' '){
+				return s.contains(" ")?s.substring(0, s.indexOf(" ")):s;
 			}
 			if(s.toLowerCase().contains("elective ") 
 					&& (('a'<=(s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()) == ' ')){
