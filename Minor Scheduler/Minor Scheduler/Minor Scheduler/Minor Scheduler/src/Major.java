@@ -93,16 +93,22 @@ public class Major {
 		ArrayList<String> t = new ArrayList<String>();
 		ArrayList<String> jx = new ArrayList<String>();
 		String x = "";
+		String end = "";
 		int year = Calendar.getInstance().get(Calendar.YEAR);
-		if(Calendar.getInstance().get(Calendar.MONTH)<9) {year--;x ="FA";}
+		if(Calendar.getInstance().get(Calendar.MONTH)<8) {year--;x ="FA";}
 		else{x="SP";}//new version comes out in Sep
-		URL website = new URL("https://www.engineering.cornell.edu/academics/undergraduate/curriculum/handbook/upload/"+year+"-Eng-Handbook-PDF.pdf");
-		//f = new File(System.getProperty("user.home")+File.separator+"Downloads"+File.separator+"Engineering_Handbook.pdf");
+		if(x.equals("SP")){
+			end = "Fall";
+		}
+		else end = "Spring";
+		URL website = new URL("https://www.engineering.cornell.edu/academics/undergraduate/curriculum/handbook/upload/"+end+"-"+year+".pdf");
+		//f = new File(System.getProperty("user.home")+File.separator+"Downloads"+File.separator+"Engineering_Handbook.pdf");https://www.engineering.cornell.edu/academics/undergraduate/curriculum/handbook/upload/Fall-2017.pdf
 		File f = new File(System.getProperty("user.home")+File.separator+"Engineering_Handbook.pdf");
 		if(f.exists()){f.delete();}//update to current version
 		Files.copy(website.openStream(), f.toPath());
 		p = f.toPath();
 		PDFTextStripper st = new PDFTextStripper();
+//		System.out.println("eric");
 		PDDocument doc = PDDocument.load(f);
 		st.setStartPage(1);
 		String s = st.getText(doc);
@@ -164,6 +170,7 @@ public class Major {
 			String classPage = s.substring(k+q.length(), l);
 //			System.out.println("j: "+j);
 //			System.out.println("x: "+x+"and the substring is "+s.substring(k-1, k));
+//			System.out.println(classPage);
 			String notePage = s.substring(l, x);
 			String[] c = classPage.split("❑");
 			String[] n = notePage.split("(\n[a-z][\\.[\\s\\s]])");//some people forget periods smh
@@ -207,8 +214,11 @@ public class Major {
 //				System.out.println(s+"###"+c);
 			}
 			if((s.toLowerCase().contains("engrd")||s.toLowerCase().contains("engineering distribution"))&&s.replaceAll("(.*([A-Z]{2,}\\s\\d\\d\\d\\d).*)", "####").equals(s)&&!(s.toLowerCase().contains("recommended"))){
-				System.out.println(s+"$$"+s.replaceAll("(.*([A-Z]{2,}\\s\\d\\d\\d\\d).*)", "####"));
-				return "ENGRD 2110"+(c!=""?" ("+c+")":"");//2110 should be taken by everyone if possible
+//				System.out.println(s+"$$"+s.replaceAll("(.*([A-Z]{2,}\\s\\d\\d\\d\\d).*)", "####"));
+				if(this.thisMajor.contains("Computer Science")){
+					return "ENGRD 2700"+(c!=""?" ("+c+")":"");//CS majors should take 2700
+				}
+				else return "ENGRD 2110"+(c!=""?" ("+c+")":"");//2110 should be taken by everyone if possible
 			}
 			if(s.toLowerCase().contains("advisor-approved elective")){
 				return "Advisor-Approved Elective"+(c!=""?" ("+c+")":"");
@@ -219,23 +229,25 @@ public class Major {
 			if(s.toLowerCase().contains("technical elective")){
 				return "Technical Elective"+(c!=""?" ("+c+")":"");
 			}
-			if(!s.contains(" ") || s.charAt(s.indexOf(" ")+1)==' '){
+			if(!s.contains(" ") || s.charAt(s.indexOf(" ")+1)==' '&&(s.replaceAll("([A-Z]{2,}\\s\\d\\d\\d\\d)", "@%%%@@%%@@%%@%@%@")).equals(s)){
 				return s.contains(" ")?s.substring(0, s.indexOf(" ")):s;
 			}
 			if(s.toLowerCase().contains("elective ") 
-					&& (('a'<=(s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()) == ' ')){
+					&& (('a'<=(s.charAt(s.toLowerCase().lastIndexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().lastIndexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().lastIndexOf("elective")+"elective".length()) == ' ')){
 				int uo = s.toLowerCase().lastIndexOf("elective ");
 				int p = s.indexOf("\n");
 				int q = s.indexOf("\n", p+1);
+				System.out.println(s+"#$"+uo+"$#"+p+"@@"+q);
 				String x = s.substring(q>-1?q:0,'a'<=(s.charAt(uo+9))&&(s.charAt(uo+9))<='z'?uo+8:uo+9).trim();
 				return  x+(c!=""?" ("+c+")":"");
 			}
 			if(s.toLowerCase().contains("elective")
-					&& (('a'<=(s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().indexOf("elective")+"elective".length()) == ' ')){
+					&& (('a'<=(s.charAt(s.toLowerCase().lastIndexOf("elective")+"elective".length()))&& (s.charAt(s.toLowerCase().lastIndexOf("elective")+"elective".length()))<='n') || s.charAt(s.toLowerCase().lastIndexOf("elective")+"elective".length()) == ' ')){
 				int uo = s.toLowerCase().lastIndexOf("elective");
 //				System.out.println(s+"@@@");
 				int p = s.indexOf("\n");
 				int q = s.indexOf("\n", p+1);
+				System.out.println(uo);
 				String x = s.substring(q>-1?q:0,'a'<=(s.charAt(uo+9))&&(s.charAt(uo+9))<='z'?uo+8:uo+9).trim();
 				return  x+(c!=""?" ("+c+")":"");
 			}

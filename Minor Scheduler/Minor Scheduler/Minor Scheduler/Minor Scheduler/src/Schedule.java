@@ -78,7 +78,7 @@ public class Schedule {
 		if(s.contains("Liberal Arts")){
 			return c.isLibArts;
 		}
-		if(s.toLowerCase().contains("elective")|| s.toLowerCase().contains("course")){
+		if(s.toLowerCase().contains("elective")|| s.toLowerCase().contains("course")||s.toLowerCase().contains("specialization")){
 			if(Integer.toString(c.courseNum).endsWith("999")||Integer.toString(c.courseNum).endsWith("090")||Integer.toString(c.courseNum).endsWith("998")){
 				return false; //these electives are research
 			}
@@ -94,7 +94,7 @@ public class Schedule {
 						f = matcher.group();
 						//System.out.println(f);
 					}
-					if(s.contains("+")){
+					if(s.contains("+")||s.toLowerCase().contains("above")){
 						return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor))&&c.courseNum>=Integer.parseInt(f.substring(0, f.length()));
 					}
 					else{
@@ -104,11 +104,14 @@ public class Schedule {
 				}
 				else return c.isTE&&c.courseType.equals(major.abbreviate(major.thisMajor));
 			}
-			else if(s.toLowerCase().contains("major-approved elective")){
+			else if(s.toLowerCase().contains("major-approved")&&s.toLowerCase().contains("elective")){
 				return c.isTE;
 			}
 			else if(s.toLowerCase().contains("technical elective")){
 				return c.isTE;
+			}
+			else if(s.toLowerCase().contains("external specialization")){
+				return c.isTE&&!c.name.contains(major.abbreviate(major.thisMajor));
 			}
 			else{
 				//check the appropriate note
@@ -448,7 +451,7 @@ public class Schedule {
 		int x = 0;//typ and x keep track of lib studies to make sure 3 categories are fulfilled
 		String u;
 		if(libst.contains("Variety")){
-			libst = "PSYCH";
+			libst = "AEM";
 			a = false;
 		}
 		int month = Calendar.getInstance().get(Calendar.MONTH);
@@ -553,11 +556,36 @@ public class Schedule {
 				i.replace(g,  "");
 //				System.out.println(i+"***%%");
 				LibSt.remove(i);
-				x++;
 				if(!typ.contains(b.LType)){
 				typ.add(b.LType);}
 				a = (6-x)>(3-typ.size());
 				}
+				}
+			}
+			else if (i.toLowerCase().contains("external specialization")){
+				boolean qy = false;
+				if(i.contains(g)){
+					qy = true;
+				}
+				int y = 0;
+				sched b = new sched(LibSt.get(y));
+				while((major.reqs.contains(b.name)||!checkPreq(b, major.reqs)||!b.isLibArts||b.getCredits()<3)&&y<LibSt.size()-1){
+					y++;
+					while(!LibSt.get(y).contains(libst)&&y<LibSt.size()-1){
+					y++;}
+//					System.out.println(LibSt.get(y)+"#####");
+					b = new sched(LibSt.get(y));
+//					System.out.println(LibSt.get(y)+"@&&&");
+				}
+				if(y<LibSt.size()&&b.isLibArts&&checkPreq(b, major.reqs)){
+				i = LibSt.get(y);
+				if(qy){
+					i+=g;
+				}
+				q.add(i);
+				i.replace(g,  "");
+//				System.out.println(i+"***%%");
+				LibSt.remove(i);
 				}
 			}
 			else if(i.contains("Major-Approved")||i.toLowerCase().contains("technical elective")||i.contains("Advisor-Approved")
